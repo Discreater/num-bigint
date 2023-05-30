@@ -86,6 +86,20 @@ pub(super) fn add2(a: &mut [BigDigit], b: &[BigDigit]) {
 forward_all_binop_to_val_ref_commutative!(impl Add for BigUint, add);
 forward_val_assign!(impl AddAssign for BigUint, add_assign);
 
+use crate::std_alloc::Vec;
+pub(crate) fn vec_add(a: &mut Vec<BigDigit>, b: &[BigDigit]) {
+    let self_len = a.len();
+    let carry = if self_len < b.len() {
+        let lo_carry = __add2(&mut a[..], &b[..self_len]);
+        a.extend_from_slice(&b[self_len..]);
+        __add2(&mut a[self_len..], &[lo_carry])
+    } else {
+        __add2(&mut a[..], &b[..])
+    };
+    if carry != 0 {
+        a.push(carry);
+    }
+}
 impl<'a> Add<&'a BigUint> for BigUint {
     type Output = BigUint;
 
@@ -97,17 +111,7 @@ impl<'a> Add<&'a BigUint> for BigUint {
 impl<'a> AddAssign<&'a BigUint> for BigUint {
     #[inline]
     fn add_assign(&mut self, other: &BigUint) {
-        let self_len = self.data.len();
-        let carry = if self_len < other.data.len() {
-            let lo_carry = __add2(&mut self.data[..], &other.data[..self_len]);
-            self.data.extend_from_slice(&other.data[self_len..]);
-            __add2(&mut self.data[self_len..], &[lo_carry])
-        } else {
-            __add2(&mut self.data[..], &other.data[..])
-        };
-        if carry != 0 {
-            self.data.push(carry);
-        }
+        vec_add(&mut self.data, &other.data);
     }
 }
 

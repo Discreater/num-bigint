@@ -13,7 +13,7 @@ use core::{u32, u64, u8};
 use num_integer::{Integer, Roots};
 use num_traits::{Num, One, Pow, ToPrimitive, Unsigned, Zero};
 
-mod addition;
+pub(crate) mod addition;
 mod division;
 mod multiplication;
 mod subtraction;
@@ -88,7 +88,7 @@ impl Ord for BigUint {
 }
 
 #[inline]
-fn cmp_slice(a: &[BigDigit], b: &[BigDigit]) -> Ordering {
+pub(crate) fn cmp_slice(a: &[BigDigit], b: &[BigDigit]) -> Ordering {
     debug_assert!(a.last() != Some(&0));
     debug_assert!(b.last() != Some(&0));
 
@@ -543,6 +543,12 @@ impl BigUint {
         let mut big = BigUint::zero();
         big.assign_from_slice(slice);
         big
+    }
+
+    pub(crate) fn from_digits(slice: &[BigDigit]) -> BigUint {
+        BigUint {
+            data: slice.to_vec(),
+        }
     }
 
     /// Assign a value to a `BigUint`.

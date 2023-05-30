@@ -124,6 +124,8 @@ mod macros;
 mod bigint;
 mod biguint;
 
+mod apuint;
+
 #[cfg(feature = "rand")]
 mod bigrand;
 
@@ -227,6 +229,7 @@ impl<T> fmt::Display for TryFromBigIntError<T> {
     }
 }
 
+pub use crate::apuint::ApUint;
 pub use crate::biguint::BigUint;
 pub use crate::biguint::ToBigUint;
 pub use crate::biguint::U32Digits;
